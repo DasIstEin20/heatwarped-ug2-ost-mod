@@ -1,0 +1,46 @@
+Heatwarped UG2 OST Mod — building from source
+
+Requirements: Windows x64, .NET 8 SDK, MinGW-w64 x64 GCC, PowerShell 7.
+No game installation is needed to compile the mod. NuGet access is needed
+on the first build to restore the pinned .NET 8.0.31 runtime packages.
+
+Build:
+  pwsh -File .\build-release.ps1
+Or provide your compiler explicitly:
+  pwsh -File .\build-release.ps1 -Compiler 'C:\your-tools\bin\gcc.exe'
+
+Output: dist\1.1.0\HeatwarpedUG2Mod.exe and distributable ZIP files.
+The same EXE becomes CustomMusic\MusicSettings.exe during installation.
+It includes the native loader and .NET runtime. No soundtrack, game engine,
+game executable, personal paths or decoder binaries are included.
+
+Integration test (your source games are only read):
+  pwsh -File .\test-release.ps1 -NfsFolder 'D:\Games\NFS UG2' -GameFolder 'D:\Games\Heatwarped Demo' -DecoderZip 'D:\Downloads\vgmstream-win64.zip'
+
+Use the original vgmstream r2117 win64 ZIP. Its pinned SHA-256 is checked.
+The tests create an isolated fixture under analysis\installer-tests and a
+temporary, separately named Unity options profile. They cover all 43 track
+conversions, cancellation before commit, preservation of unrelated mods,
+installation, executing the self-contained mixer, playlist upgrades,
+uninstall after game audio changes, and selective audio-options restoration.
+The native test exercises menu/drive switching, muting, disabled fallback
+and live reload with FMOD's no-sound output. It never launches the game.
+The fixture is kept for review. test-results.json records its location.
+
+Implementation:
+  core/       BIG4 + Pathfinder extraction, song table discovery, installer
+  installer/  English two-step Windows Forms wizard and embedded payload
+  settings/   English music selection panel (standalone or linked library)
+  native/     Windows version.dll proxy; FMOD music hooks
+  vendor/     MinHook sources and original license
+  tests/      Isolated installer and native audio integration tests
+
+Extraction supports original PC Underground 2 Pathfinder v4 with 43 streams.
+Song metadata is found through PE pointers rather than fixed EXE offsets.
+The loader matches the known Heatwarped music event GUIDs. A different demo
+audio layout requires review and a mod update; the installer refuses it.
+
+The decoder is fetched at runtime from its official pinned release and
+verified before use. See release-assets/README.txt for offline caching.
+Original in-game Jukebox titles remain the game's own titles; the separate
+Music Settings panel shows Underground 2 tracks.

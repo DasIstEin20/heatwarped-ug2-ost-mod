@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.tools/
+.test-game/
+analysis/
+dist/
+package/
+extracted/
+release-assets/version.dll
+*.user
+.vs/
