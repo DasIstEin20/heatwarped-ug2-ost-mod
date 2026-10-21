@@ -14,7 +14,7 @@ The download contains **no soundtrack or original game files**. You need your ow
 ## Installation
 
 1. Download and extract the Windows x64 ZIP from [Releases](https://github.com/DasIstEin20/heatwarped-ug2-ost-mod/releases/latest).
-2. Close Heatwarped and Music Settings, then run `HeatwarpedUG2Mod.exe`.
+2. Close Heatwarped, then run `HeatwarpedUG2Mod.exe`.
 3. Select your Underground 2 folder containing `SPEED2.EXE` and click **Extract soundtrack**.
 4. Select your Heatwarped Demo folder and click **Install mod**.
 
