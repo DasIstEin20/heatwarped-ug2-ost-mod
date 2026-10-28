@@ -9,7 +9,7 @@ Build:
 Or provide your compiler explicitly:
   pwsh -File .\build-release.ps1 -Compiler 'C:\your-tools\bin\gcc.exe'
 
-Output: dist\1.1.0\HeatwarpedUG2Mod.exe and distributable ZIP files.
+Output: dist\1.2.0\HeatwarpedUG2Mod.exe and distributable ZIP files.
 The same EXE becomes CustomMusic\MusicSettings.exe during installation.
 It includes the native loader and .NET runtime. No soundtrack, game engine,
 game executable, personal paths or decoder binaries are included.
@@ -30,8 +30,8 @@ The fixture is kept for review. test-results.json records its location.
 Implementation:
   core/       BIG4 + Pathfinder extraction, song table discovery, installer
   installer/  English two-step Windows Forms wizard and embedded payload
-  settings/   English music selection panel (standalone or linked library)
-  native/     Windows version.dll proxy; FMOD music hooks
+  settings/   Offline Windows import/preview utility (or linked library)
+  native/     version.dll proxy; FMOD hooks and Unity in-game music panel
   vendor/     MinHook sources and original license
   tests/      Isolated installer and native audio integration tests
 
@@ -42,5 +42,19 @@ audio layout requires review and a mod update; the installer refuses it.
 
 The decoder is fetched at runtime from its official pinned release and
 verified before use. See release-assets/README.txt for offline caching.
-Original in-game Jukebox titles remain the game's own titles; the separate
-Music Settings panel shows Underground 2 tracks.
+F8 draws the native in-game playlist panel through Unity's IMGUI, independent
+of the graphics API. It uses a dedicated persistent FMOD OnGUI helper and
+resolves IL2CPP APIs at runtime. Renamed exports are supported for the tested
+demo b957f2bca (6000.4.1f1) via a build-checked export-name map. A different
+IL2CPP layout requires review before enabling the overlay on that build.
+The MusicManager Racing playlist request drives race start/restart changes;
+normal FMOD event starts and pause/resume do not independently skip songs.
+Now-playing notifications last four seconds and fade over the last 0.8s.
+The offline Windows utility remains available for importing and previewing
+music. Original Jukebox titles remain the game's own titles.
+
+Deterministic native player tests (no game or sound device needed):
+  pwsh -File .\test-player.ps1 -LoaderPath .\release-assets\version.dll
+These cover shuffle/no immediate repeats, natural track completion, F9,
+race start/restart and single advance, notification timing and fade, Unicode
+configuration save/reload, playlist eligibility and disabled fallback.

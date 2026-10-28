@@ -1,15 +1,24 @@
-Heatwarped UG2 OST Mod 1.1.0 — Windows x64
+Heatwarped UG2 OST Mod 1.2.0 — Windows x64
 
 1. Run HeatwarpedUG2Mod.exe.
 2. Choose the folder containing your NFS Underground 2 SPEED2.EXE.
 3. Click Extract soundtrack. The first run downloads the official vgmstream
    r2117 decoder (4.5 MB); subsequent runs can use the verified cached ZIP.
 4. Choose your installed Heatwarped Demo folder and click Install mod.
-5. Launch the game normally. Press F8 for Music Settings, F9 for the next song.
+5. Launch the game normally. Press F8 for in-game Music Settings, F9 to skip.
 
 Music Settings is entirely in English. Every song has separate Menu and
 Driving / racing checkboxes. The default split is 6 menu tracks, 21 driving
 tracks, and 16 optional alternate versions. Settings save automatically.
+F8, Escape or X closes the panel; drag its header to move it and scroll to
+browse tracks. The panel pauses the game and restores the previous pause
+state when closed. It is drawn by Unity, including with the Vulkan renderer.
+
+Every song change while driving shows a notification in the top-left corner
+for four seconds, with a smooth fade during the last 0.8 seconds. Starting
+or restarting a race advances to the next driving song at the countdown.
+Shuffle avoids immediately repeating the same song when more are enabled.
+The original music footer is hidden while custom music is active.
 
 The installer is self-contained: no Python, FFmpeg command-line installation,
 or separately installed .NET runtime is required. Internet access is needed
@@ -40,7 +49,8 @@ and choose Uninstall an existing mod, or use CustomMusic\Uninstall Mod.cmd.
 Music is preserved in a CustomMusic.disabled-* folder; no saves are deleted.
 
 The original in-game Jukebox still shows the original Heatwarped titles.
-Use F8 or Music Settings.cmd for the UG2 music configuration.
+F8 opens the in-game playlist panel. Music Settings.cmd opens the offline
+Windows utility, which also supports importing and previewing audio files.
 
 Redistribution: share this installer/ZIP, not the extracted music folder.
 See LICENSE and THIRD-PARTY-NOTICES.txt. This is an unofficial fan mod and is

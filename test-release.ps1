@@ -10,7 +10,7 @@ Set-Location -LiteralPath $PSScriptRoot
 if (-not $NativeOnly) {
     dotnet build tests\CoreTests\CoreTests.csproj -c Release
     if ($LASTEXITCODE -ne 0) { throw 'Test build failed.' }
-    dotnet tests\CoreTests\bin\Release\net8.0-windows\CoreTests.dll $NfsFolder $GameFolder $DecoderZip (Join-Path $PSScriptRoot 'dist\1.1.0\HeatwarpedUG2Mod.exe') (Join-Path $PSScriptRoot 'analysis\installer-tests')
+    dotnet tests\CoreTests\bin\Release\net8.0-windows\CoreTests.dll $NfsFolder $GameFolder $DecoderZip (Join-Path $PSScriptRoot 'dist\1.2.0\HeatwarpedUG2Mod.exe') (Join-Path $PSScriptRoot 'analysis\installer-tests')
     if ($LASTEXITCODE -ne 0) { throw 'Installer integration tests failed.' }
 }
 $report = Get-Content -LiteralPath 'analysis\installer-tests\test-results.json' -Raw | ConvertFrom-Json
@@ -43,6 +43,7 @@ if (-not $Compiler) {
 }
 $env:PATH = (Split-Path -Path $Compiler -Parent) + ';' + $env:PATH
 $testExe = Join-Path $fixture 'fmod-integration.exe'
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'release-assets\version.dll') -Destination (Join-Path $fixture 'version.dll') -Force
 # Some GCC driver builds cannot pass Unicode output paths to their linker.
 $buildExe = Join-Path $PSScriptRoot 'analysis\fmod-integration.exe'
 & $Compiler -O2 -Wall -Wextra -o $buildExe tests\fmod_integration.c -lm

@@ -241,17 +241,23 @@ public sealed class ModInstaller(byte[] nativeLoader,string applicationPath,stri
     public const string InstalledReadme="""
 Heatwarped UG2 OST Mod
 
-Launch Heatwarped Demo normally. F8 opens the separate Music Settings window;
-F9 plays the next track. Select Menu and/or Driving / racing for every song.
-Changes are saved automatically and applied while the game is running.
+Launch Heatwarped Demo normally. F8 toggles Music Settings inside the game;
+F8, Escape or X closes it. Drag the header to move it and scroll through the
+songs. Select Menu and/or Driving for each song, adjust volume and shuffle.
+Changes save automatically. The game pauses while the panel is open and its
+previous pause state is restored when you close the panel. F9 skips a song.
+
+Every new custom song while driving shows an UG2-style notification at the
+top left for four seconds, fading out over the last 0.8 seconds. Race starts
+and restarts advance the driving playlist once at the race countdown.
 
 Default UG2 split: 6 menu tracks, 21 driving tracks; 16 alternate versions are
 available to select. An empty playlist or disabling custom music restores the
 original soundtrack. The game audio sliders and master volume still apply.
 
-You can add WAV, MP3, OGG, FLAC and AIFF in Music Settings. WAV preview plays
-inside the panel; compressed-file preview opens the default Windows player.
-The original in-game Jukebox still displays the original Heatwarped tracks.
+Music Settings.cmd opens the offline Windows utility for importing WAV, MP3,
+OGG, FLAC and AIFF files or previewing songs. F8 always opens the in-game
+panel. The original Jukebox still lists the original Heatwarped tracks.
 
 This mod contains no NFS music or original game binaries in its distribution.
 Audio is extracted locally from the user's Underground 2 installation.

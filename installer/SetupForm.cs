@@ -112,7 +112,7 @@ public sealed class SetupForm : Form
                 var installer=new ModInstaller(Program.Loader(),Environment.ProcessPath!,Program.Notices());
                 await installer.InstallAsync(game,extraction,updates,cancellation.Token);
                 gamePath=game.Root;SavePreferences();done=true;step.Text="Ready to drive";description.Text="The Underground 2 soundtrack is now available in Heatwarped Demo.";
-                summary.Text=$"Installed in: {gamePath}\n\nF8 — open Music Settings     F9 — next track\nChoose Menu and/or Driving / racing for each track. Your game audio sliders still apply.";
+                summary.Text=$"Installed in: {gamePath}\n\nF8 — in-game Music Settings     F9 — next track\nSongs appear in the top-left corner for 4 seconds with a fade. Race starts and restarts advance the playlist. Your game audio sliders still apply.";
                 primary.Text="Open game folder";secondary.Visible=true;uninstall.Visible=false;Cleanup();
             }
         }

@@ -6,8 +6,10 @@ Import the **Need for Speed Underground 2** soundtrack into **Heatwarped Demo**,
 
 - Extracts music from your installed PC copy of Underground 2 and converts it locally to WAV.
 - Adds 27 full songs and 16 optional alternate versions. Defaults match UG2: 6 menu songs and 21 driving songs.
-- Installs an audio loader and an English Music Settings panel. Each track can play in the menu, during free-roam/races, or in both playlists.
+- Opens an English Music Settings window **inside the game with F8**, with volume, shuffle and separate menu/driving selections for each song.
 - Supports additional user music, shuffle, volume adjustment and changes while the game is running.
+- Shows the current artist and song in an Underground 2-style notification at the top left whenever the driving song changes, including automatic changes and F9 skips. It lasts **4 seconds**, fading out over the last **0.8 seconds**.
+- Advances the driving playlist at each race countdown, including restarts, without immediately repeating a song when multiple tracks are enabled.
 
 The download contains **no soundtrack or original game files**. You need your own installations of both games.
 
@@ -18,7 +20,9 @@ The download contains **no soundtrack or original game files**. You need your ow
 3. Select your Underground 2 folder containing `SPEED2.EXE` and click **Extract soundtrack**.
 4. Select your Heatwarped Demo folder and click **Install mod**.
 
-Launch the game normally. **F8** opens Music Settings; **F9** skips to the next track. Your game audio sliders still apply.
+Launch the game normally. **F8** toggles the in-game Music Settings window; **F9** skips to the next track. Close the panel with F8, Escape or X, drag its header to move it and scroll through the songs. Changes save automatically. The game pauses while the panel is open and returns to its previous pause state when closed. Your game audio sliders still apply.
+
+`Music Settings.cmd` still opens the offline Windows utility for importing and previewing audio files. The in-game panel is rendered through Unity and works with the tested Vulkan renderer.
 
 No Python or separate .NET installation is required. The first conversion downloads the official vgmstream r2117 decoder (about 4.5 MB), verifies its SHA-256 and runs it locally. Allow about 1.2 GB of temporary space and 1.2 GB on the game drive. Offline setup instructions are in [the included guide](release-assets/README.txt).
 
@@ -36,6 +40,6 @@ The mod source implements no telemetry or startup persistence. Its only network 
 
 Run Setup and choose **Uninstall an existing mod**, or run `CustomMusic\Uninstall Mod.cmd`. Music and settings are preserved in a `CustomMusic.disabled-*` folder. Updates preserve playlist choices and retain the previous mod folder as a backup.
 
-For source builds and integration tests, see [BUILDING.txt](BUILDING.txt). Requirements: Windows x64, .NET 8 SDK, MinGW-w64 x64 GCC and PowerShell 7.
+For source builds and integration tests, see [BUILDING.txt](BUILDING.txt). Requirements: Windows x64, .NET 8 SDK, MinGW-w64 x64 GCC and PowerShell 7. `test-player.ps1` checks shuffle, automatic/manual/race track changes, notification timing and fade, configuration round trips and disabled fallback without launching the game.
 
 The mod code is under the [MIT license](LICENSE). See [third-party notices](release-assets/THIRD-PARTY-NOTICES.txt) for dependencies. This is an unofficial fan mod, unaffiliated with the developers of either game.

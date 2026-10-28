@@ -94,6 +94,10 @@ static void log_line(const char *fmt, ...) {
     va_list args; va_start(args,fmt); vfprintf(f,fmt,args); va_end(args);
     fputs("\r\n",f); fclose(f);
 }
+static int save_config(void);
+static void next_track(void);
+static int has_playlist(int wanted);
+#include "unity_overlay.h"
 static void utf8(const wchar_t *src,char *dest,int size) {
     if(!WideCharToMultiByte(CP_UTF8,0,src,-1,dest,size,NULL,NULL)) dest[0]=0;
 }
@@ -150,7 +154,7 @@ static void next_track(void) {
         set_channel_paused(channel,0);
         char title[2048];utf8(tracks[index].title,title,sizeof(title));
         log_line("Playing [%s] %s (event volume %.3f, gain %.3f)",context==1?"menu":"drive",title,event_volume,gain);
-        retry_after=0;write_status("Playing");return;
+        retry_after=0;overlay_notify();write_status("Playing");return;
     }
     retry_after=GetTickCount64()+5000;
     log_line("No playable files for context %d",context); write_status("No playable tracks");
@@ -222,6 +226,29 @@ static void load_config(void) {
     if(channel)set_channel_volume(channel,event_volume*gain);
     log_line("Configuration loaded: %d tracks, enabled=%d shuffle=%d gain=%.3f",track_count,enabled,shuffle,gain);
 }
+static int save_config(void) {
+    size_t capacity=256+(size_t)track_count*1700;
+    wchar_t *text=calloc(capacity,sizeof(wchar_t));if(!text)return 0;
+    int used=swprintf(text,capacity,L"[General]\r\nEnabled=%d\r\nShuffle=%d\r\nGain=%.3f\r\nCount=%d\r\n",enabled,shuffle,gain,track_count);
+    for(int i=0;i<track_count && used>0;i++) {
+        int written=swprintf(text+used,capacity-used,L"\r\n[Track%d]\r\nFile=%ls\r\nTitle=%ls\r\nMenu=%d\r\nDrive=%d\r\n",i,tracks[i].file,tracks[i].title,tracks[i].menu,tracks[i].drive);
+        if(written<0){free(text);return 0;}used+=written;
+    }
+    wchar_t temporary[1300];swprintf(temporary,1300,L"%ls.overlay-%lu.tmp",config_path,GetCurrentProcessId());
+    HANDLE file=CreateFileW(temporary,GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
+    int ok=0;
+    if(file!=INVALID_HANDLE_VALUE) {
+        WORD bom=0xfeff;DWORD wrote=0,bytes=(DWORD)(used*sizeof(wchar_t));
+        ok=WriteFile(file,&bom,2,&wrote,NULL) && wrote==2 && WriteFile(file,text,bytes,&wrote,NULL) && wrote==bytes;
+        CloseHandle(file);
+        if(ok)ok=MoveFileExW(temporary,config_path,MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH)!=0;
+        if(!ok)DeleteFileW(temporary);
+    }
+    free(text);
+    if(ok)load_config();
+    else log_line("In-game settings save failed: %lu",GetLastError());
+    return ok;
+}
 static int hooked_create_instance(void *description,void **output) {
     int result=original_create_instance(description,output);
     if(!result && output && *output) {
@@ -263,6 +290,7 @@ static int hooked_volume(void *instance,float volume) {
     return original_volume(instance,has_playlist(item->context)?0.f:volume);
 }
 static int hooked_update(void *studio) {
+    unity_overlay_tick();
     if(!core && !get_core(studio,&core) && core) {
         void *master=NULL;
         if(!get_master_group(core,&master) && master && !create_group(core,"HeatwarpedCustomMusic",&music_group))
@@ -318,7 +346,8 @@ static int hooked_update(void *studio) {
     if(stop_after && now>=stop_after) {
         stop_after=0;end_track();context=0;active_instance=NULL;write_status("Waiting");
     }
-    if(InterlockedExchange(&skip_requested,0)) {
+    int race_next=context==2 && !stop_after && InterlockedExchange(&race_requested,0);
+    if(InterlockedExchange(&skip_requested,0) || race_next) {
         if(context)next_track();
     }
     if(enabled && has_playlist(context) && !stop_after) {
@@ -382,7 +411,7 @@ static int install_hooks(HMODULE module) {
 }
 static DWORD WINAPI bootstrap(void *unused) {
     (void)unused;srand((unsigned)GetTickCount());
-    log_line("CustomMusic 1.1 starting, process=%lu",GetCurrentProcessId());
+    log_line("CustomMusic 1.2 starting, process=%lu",GetCurrentProcessId());
     HMODULE fmod=NULL;
     for(int i=0;i<2400 && !fmod;i++) {fmod=GetModuleHandleW(L"fmodstudio.dll");if(!fmod)Sleep(25);}
     if(!fmod || !install_hooks(fmod)) {log_line("Music extension inactive: FMOD initialization failed.");return 0;}
@@ -392,8 +421,7 @@ static DWORD WINAPI bootstrap(void *unused) {
         int f8=(GetAsyncKeyState(VK_F8)&0x8000)!=0,f9=(GetAsyncKeyState(VK_F9)&0x8000)!=0;
         if(foreground_pid==GetCurrentProcessId()) {
             if(f8 && !f8_was) {
-                wchar_t exe[1200];swprintf(exe,1200,L"%ls\\CustomMusic\\MusicSettings.exe",game_dir);
-                ShellExecuteW(NULL,L"open",exe,NULL,NULL,SW_SHOWNORMAL);
+                InterlockedExchange(&overlay_toggle_requested,1);
             }
             if(f9 && !f9_was)InterlockedExchange(&skip_requested,1);
         }

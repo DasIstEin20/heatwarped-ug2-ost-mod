@@ -5,7 +5,7 @@ namespace HeatwarpedUG2;
 public static class ModInfo
 {
     public const string Id = "Heatwarped.UG2.OST";
-    public const string Version = "1.1.0";
+    public const string Version = "1.2.0";
     public const string DecoderUrl = "https://github.com/vgmstream/vgmstream/releases/download/r2117/vgmstream-win64.zip";
     public const string DecoderSha256 = "6c4a8a3813864fefed081bbd337dbc0ad93bf88e0b92f5db98d7ab258b22dc6c";
     public static readonly JsonSerializerOptions Json = new() { PropertyNamingPolicy=JsonNamingPolicy.CamelCase,PropertyNameCaseInsensitive=true,WriteIndented=true };
